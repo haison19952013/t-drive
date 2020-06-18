@@ -1,0 +1,34 @@
+from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import KMeans
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import os
+
+
+class Process:
+    def __init__(self, data_path):
+        self.data_path = data_path
+
+    def MyKMeans(self):
+        # The method produce  results of 2 cluster algorithms (i.e: normal Kmeans and  mini batch Kmeans)
+        csv_data = pd.read_csv(self.data_path)
+        long_lat = csv_data.values # convert columns data (format of pandas) to array
+        minibatchkmeans = MiniBatchKMeans(n_clusters=10, max_iter=500, random_state=0).fit(long_lat)
+        kmeans = KMeans(n_clusters=10, max_iter=500, random_state=0).fit(long_lat)
+        return minibatchkmeans, kmeans, long_lat
+
+
+if __name__ == '__main__':
+    data_path = os.path.join(os.getcwd(),'Data/Hourframe/T-drive Taxi Trajectories0.csv')
+    Trajectory0 = Process(data_path)
+    minibatch, normal, X = Trajectory0.MyKMeans()
+    print(normal.cluster_centers_)
+    print(minibatch.cluster_centers_)
+    # labels1 = minibatchkmeans.labels_
+    # labels2 = kmeans.labels_
+    # plt.subplot(121)
+    # plt.scatter(X[:, 0], X[:, 1], c=labels1.astype(np.float), edgecolor='k')
+    # plt.subplot(122)
+    # plt.scatter(X[:, 0], X[:, 1], c=labels2.astype(np.float), edgecolor='k')
+    # plt.show()
