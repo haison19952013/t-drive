@@ -36,8 +36,7 @@ class Preprocess:
 
         print('All files are successfully converted')
 
-    def txt2csv_allin1(self, file_range=range(1, 10357 + 1)):  # number of .txt files are 10357
-        # Method for collecting the raw data and convert to ONLY 1 csv files (i.e: 1000 users' info per csv file)
+    def txt2csv_allin1(self, file_range=range(1, 10357 + 1)):  
         # The file has headers
         csvout_lst = []
         csv_file_path = os.path.join(self.csv_data_folder, 'Fullframe/T-drive Taxi Trajectories.csv')
