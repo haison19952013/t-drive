@@ -12,23 +12,35 @@ class Process:
 
     def MyKMeans(self):
         # The method produce  results of 2 cluster algorithms (i.e: normal Kmeans and  mini batch Kmeans)
-        csv_data = pd.read_csv(self.data_path)
-        long_lat = csv_data.values # convert columns data (format of pandas) to array
-        minibatchkmeans = MiniBatchKMeans(n_clusters=10, max_iter=500, random_state=0).fit(long_lat)
+        csv_data = pd.read_csv(self.data_path, header=None)
+        long_lat = csv_data.values  # convert columns data (format of pandas) to array
         kmeans = KMeans(n_clusters=10, max_iter=500, random_state=0).fit(long_lat)
-        return minibatchkmeans, kmeans, long_lat
+        centroids_ = kmeans.cluster_centers_
+        labels_ = kmeans.labels_
+        return kmeans, long_lat, centroids_, labels_
 
 
 if __name__ == '__main__':
-    data_path = os.path.join(os.getcwd(),'Data/Hourframe/T-drive Taxi Trajectories0.csv')
-    Trajectory0 = Process(data_path)
-    minibatch, normal, X = Trajectory0.MyKMeans()
-    print(normal.cluster_centers_)
-    print(minibatch.cluster_centers_)
-    # labels1 = minibatchkmeans.labels_
-    # labels2 = kmeans.labels_
-    # plt.subplot(121)
-    # plt.scatter(X[:, 0], X[:, 1], c=labels1.astype(np.float), edgecolor='k')
-    # plt.subplot(122)
-    # plt.scatter(X[:, 0], X[:, 1], c=labels2.astype(np.float), edgecolor='k')
-    # plt.show()
+    for hour in range(24):
+        data_dir = os.path.join(os.getcwd(), 'Data/Hourframe/T-drive Taxi Trajectories%s.csv' % hour)
+        figure_dir = os.path.join(os.getcwd(), 'Data/Result/T-drive Taxi Trajectories%s.png' % hour)
+        csv_dir = os.path.join(os.getcwd(), 'Data/Result/T-drive Taxi Trajectories Centroids %s.csv' % hour)
+        process = Process(data_dir)
+        model, X_Y, centroids, labels = process.MyKMeans()
+
+        pd.DataFrame(centroids).to_csv(csv_dir,header=None,index=None)
+
+        title = '{} Hour frame : {:,.0f} data points'.format(hour, len(X_Y))
+        legend = [str(i + 1) for i in range(10)]
+        fig, ax = plt.subplots(figsize=(20, 10))
+
+        ax.scatter(X_Y[:, 0], X_Y[:, 1], s=15, c=labels.astype(np.float), edgecolor='k',alpha=0.5)
+        for idx in range(len(centroids)):
+            ax.text(centroids[idx, 0], centroids[idx, 1],legend[idx],color='red')
+        ax.set_aspect('equal')
+        ax.set(title=title, ylabel='Latitude', xlabel='Longitude')
+        ax.set(xlim=[-20, 270], ylim=[-20, 100])
+        fig.savefig(figure_dir)
+        print('Finished saving hour frame no %s' % hour)
+        # plt.show()
+        plt.close()
