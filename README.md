@@ -9,3 +9,8 @@ The file receives 4 params:
 - Output file directory
 - Number of clusters (int)
 - Number of iterations (int)
+
+#Python code
+A repo to a different of this project basing on Python
+
+Link: https://github.com/haison19952013/t-drive
